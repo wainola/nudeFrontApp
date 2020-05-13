@@ -1,13 +1,16 @@
 window.renderPokemon = function(DOMNode){
     const {store} = window
-    console.log(store)
     // SI TIEMPO 0
     if(store.prevState && !store.currentState.length){
         return store.prevState.map(function(item) {
             const subtitle = document.createElement('h3')
             const paragraph = document.createElement('p')
             const unorderedList = document.createElement('ul')
-            subtitle.innerHTML = item.name.english
+            const image = document.createElement('img')
+            const container = document.createElement('div')
+            container.classList.add('pokemon-container')
+            subtitle.innerHTML = item.name
+            image.src = item.img
             const { type } = item
             for(let i = 0; i < type.length; i++){
                 const li = document.createElement('li')
@@ -15,8 +18,10 @@ window.renderPokemon = function(DOMNode){
                 unorderedList.appendChild(li)
             }
             paragraph.appendChild(unorderedList)
-            DOMNode.appendChild(subtitle)
-            DOMNode.appendChild(paragraph)
+            container.appendChild(image)
+            container.appendChild(subtitle)
+            container.appendChild(paragraph)
+            DOMNode.appendChild(container)
         })
     } else if(store.currentState.length){
         DOMNode.innerHTML = ""
@@ -24,7 +29,11 @@ window.renderPokemon = function(DOMNode){
             const subtitle = document.createElement('h3')
             const paragraph = document.createElement('p')
             const unorderedList = document.createElement('ul')
-            subtitle.innerHTML = item.name.english
+            const image = document.createElement('img')
+            const container = document.createElement('div')
+            container.classList.add('pokemon-container')
+            subtitle.innerHTML = item.name
+            image.src = item.img
             const { type } = item
             for(let i = 0; i < type.length; i++){
                 const li = document.createElement('li')
@@ -32,8 +41,10 @@ window.renderPokemon = function(DOMNode){
                 unorderedList.appendChild(li)
             }
             paragraph.appendChild(unorderedList)
-            DOMNode.appendChild(subtitle)
-            DOMNode.appendChild(paragraph)
+            container.appendChild(image)
+            container.appendChild(subtitle)
+            container.appendChild(paragraph)
+            DOMNode.appendChild(container)
         })
     }
 }
@@ -90,4 +101,108 @@ window.applyFilter = function(currentOption, DOMNode){
     }
 
     return null
+}
+
+window.createOrderOptions = function(DOMNode) {
+    const myOptions = [
+        "Ordernar por id",
+        "Ordenar por nombre",
+        "Frecuencia (rareza)"
+    ]
+
+    return myOptions.map(function(item, idx){
+        if(idx !== 0){
+            const option = document.createElement('option')
+            option.value = item
+            option.innerHTML = item
+            return option
+        }
+
+        const firstOption = document.createElement('option')
+        firstOption.value = ""
+        firstOption.innerHTML = "Ordenar por"
+        const option = document.createElement('option')
+        option.value = item
+        option.innerHTML = item
+        return [ firstOption, option ]
+        
+    }).map(function(opt) {
+        if(Array.isArray(opt)){
+            const [optionTitle, firstOption]  = opt
+            DOMNode.appendChild(optionTitle)
+            DOMNode.appendChild(firstOption)
+            return
+        } else {
+            DOMNode.appendChild(opt)
+            return
+        }
+    })
+}
+
+window.filterBy = function(optionToFilterBy, DOMNode) {
+    let { store: {
+        prevState,
+        currentState
+    }} = window
+
+    const sortedCollection = toFilter(optionToFilterBy, currentState, prevState)
+    
+    if(currentState.length){
+        currentState = sortedCollection
+    } else {
+        prevState = sortedCollection
     }
+    return renderPokemon(DOMNode)
+
+}
+
+const toFilter = function(optionTofilter, currentState, prevState){
+    switch(optionTofilter){
+        case "Ordernar por id":
+            if(currentState.length) {
+                return currentState.sort(function(a,b) {
+                    if(a.id < b.id) return -1
+                    if(a.id > b.id) return 1
+                    return 0
+                }) 
+            } else {
+                return prevState.sort(function(a,b) {
+                    if(a.id < b.id) return -1
+                    if(a.id > b.id) return 1
+                    return 0
+                })
+            }
+
+        case "Ordenar por nombre":
+            if(currentState.length) {
+                return currentState.sort(function(a,b) {
+                    if(a.name < b.name) return -1
+                    if(a.name > b.name) return 1
+                    return 0
+                }) 
+            } else {
+                return prevState.sort(function(a,b) {
+                    if(a.name < b.name) return -1
+                    if(a.name > b.name) return 1
+                    return 0
+                })
+            }
+        case "Frecuencia (rareza)":
+            if(currentState.length) {
+                return currentState.sort(function(a,b) {
+                    if(a.avg_spawns < b.avg_spawns) return -1
+                    if(a.avg_spawns > b.avg_spawns) return 1
+                    return 0
+                }) 
+            } else {
+                return prevState.sort(function(a,b) {
+                    if(a.avg_spawns < b.avg_spawns) return -1
+                    if(a.avg_spawns > b.avg_spawns) return 1
+                    return 0
+                })
+            }
+        default:
+            return null
+
+    }
+}

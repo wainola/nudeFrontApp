@@ -1,0 +1,45 @@
+
+body {
+    background: rgb(238,174,202);
+    background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%); 
+}
+
+div.header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+div.header-container > h1 {
+    box-shadow: 5px 5px 5px;
+    border: 2px solid;
+    padding: 5px;
+}
+
+div.header-container > div > h2 {
+    box-shadow: 5px 5px 5px;
+    border: 2px solid;
+    padding: 5px;
+}
+
+div#selections {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 35px;
+}
+
+div > select {
+    margin: 5px;
+}
+
+div#pokemonList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+div.pokemon-container {
+    margin: 35px;
+}
